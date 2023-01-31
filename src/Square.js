@@ -5,6 +5,8 @@ import {
     checkIfCheckmate,
     checkAvailableMoves,
     finishOutOfCheck,
+    checkSquareForPiece,
+    checkCastleValid,
 } from "./helperFunctions.js";
 
 export default function Square({
@@ -34,12 +36,12 @@ export default function Square({
 }) {
     let cn;
     if (row % 2 == 0) {
-        cn = col % 2 == 0 ? "square black" : "square";
-    } else {
         cn = col % 2 !== 0 ? "square black" : "square";
+    } else {
+        cn = col % 2 == 0 ? "square black" : "square";
     }
 
-    const square = row.toString() + col.toString();
+    const square = col.toString() + row.toString();
     piece = null;
 
     for (let i = 0; i < pieces.length; i++) {
@@ -66,8 +68,8 @@ export default function Square({
                 }
 
                 let previousSquare =
-                    selectedPiece.piece.currentRow.toString() +
-                    selectedPiece.piece.currentCol.toString();
+                    selectedPiece.piece.currentCol.toString() +
+                    selectedPiece.piece.currentRow.toString();
 
                 let newWhiteKingSquare = whiteKingSquare;
                 let newBlackKingSquare = blackKingSquare;
@@ -79,10 +81,10 @@ export default function Square({
                 if (
                     selectedPiece.piece.type == "king" &&
                     !selectedPiece.piece.moved &&
-                    square[0] == selectedPiece.piece.currentRow.toString() &&
-                    (square[1] ==
+                    square[1] == selectedPiece.piece.currentRow.toString() &&
+                    (square[0] ==
                         (selectedPiece.piece.currentCol + 2).toString() ||
-                        square[1] ==
+                        square[0] ==
                             (selectedPiece.piece.currentCol - 2).toString())
                 ) {
                     // Need to check if currently in check or the adjacent square would be in check. Already check the final square later on so no need to repeat
@@ -90,16 +92,16 @@ export default function Square({
                         return;
                     }
 
-                    // white king side - 06, queen side - 02
-                    // black king side - 76, queen side - 72
-                    if (square == "06") {
-                        newWhiteKingSquare = "05";
-                    } else if (square == "02") {
-                        newWhiteKingSquare = "03";
-                    } else if (square == "76") {
-                        newBlackKingSquare = "75";
-                    } else if (square == "72") {
-                        newBlackKingSquare = "73";
+                    // white king side - 71, queen side - 31
+                    // black king side - 78, queen side - 38
+                    if (square == "71") {
+                        newWhiteKingSquare = "61";
+                    } else if (square == "31") {
+                        newWhiteKingSquare = "41";
+                    } else if (square == "78") {
+                        newBlackKingSquare = "68";
+                    } else if (square == "38") {
+                        newBlackKingSquare = "48";
                     }
 
                     if (
@@ -136,22 +138,22 @@ export default function Square({
                         }
                     }
 
-                    if (square == "06") {
+                    if (square == "71") {
                         newWhiteKingSquare = square;
                         piecesCopy[wr2Index].currentRow = row;
                         piecesCopy[wr2Index].currentCol = col - 1;
                         piecesCopy[wr2Index].moved = true;
-                    } else if (square == "02") {
+                    } else if (square == "31") {
                         newWhiteKingSquare = square;
                         piecesCopy[wr1Index].currentRow = row;
                         piecesCopy[wr1Index].currentCol = col + 1;
                         piecesCopy[wr1Index].moved = true;
-                    } else if (square == "76") {
+                    } else if (square == "78") {
                         newBlackKingSquare = square;
                         piecesCopy[br2Index].currentRow = row;
                         piecesCopy[br2Index].currentCol = col - 1;
                         piecesCopy[br2Index].moved = true;
-                    } else if (square == "72") {
+                    } else if (square == "38") {
                         newBlackKingSquare = square;
                         piecesCopy[br1Index].currentRow = row;
                         piecesCopy[br1Index].currentCol = col + 1;
@@ -182,25 +184,19 @@ export default function Square({
                     piecesCopy[selectedPieceIndex].moved = true;
 
                     if (piece) {
-                        selectedPieceIndex = capturePiece(
-                            piece,
-                            capturedPiecesCopy,
-                            piecesCopy,
-                            selectedPieceIndex
-                        );
+                        capturePiece(piece, capturedPiecesCopy, piecesCopy);
                     }
 
                     // En Passant
                     if (
                         selectedPiece.piece.type == "pawn" &&
                         !piece &&
-                        square[1] != selectedPiece.piece.currentCol
+                        square[0] != selectedPiece.piece.currentCol
                     ) {
-                        selectedPieceIndex = capturePiece(
+                        capturePiece(
                             moves[moves.length - 1][0],
                             capturedPiecesCopy,
-                            piecesCopy,
-                            selectedPieceIndex
+                            piecesCopy
                         );
                     }
 
@@ -233,7 +229,7 @@ export default function Square({
                     // following logic then handled by other function
                     if (
                         selectedPiece.piece.type == "pawn" &&
-                        (row == 0 || row == 7)
+                        (row == 1 || row == 8)
                     ) {
                         setPromote(true);
                         setPieces(piecesCopy);
@@ -283,15 +279,148 @@ export default function Square({
                 (whiteToMove && piece.colour == "white") ||
                 (!whiteToMove && piece.colour == "black")
             ) {
-                let pieceCopy = { ...piece };
+                let legalMoves = [];
+                let selectedPieceCopy = JSON.parse(
+                    JSON.stringify(selectedPiece)
+                );
+                selectedPieceCopy.piece = { ...piece };
+                let previousSquare =
+                    selectedPieceCopy.piece.currentCol.toString() +
+                    selectedPieceCopy.piece.currentRow.toString();
+                let selectedPieceIndex;
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].name === selectedPieceCopy.piece.name) {
+                        selectedPieceIndex = i;
+                        break;
+                    }
+                }
 
-                // check whether each available move would result put self in check
-                // if does don't add, if doesn't add
+                for (
+                    let i = 0;
+                    i < selectedPieceCopy.piece.availableMoves.length;
+                    i++
+                ) {
+                    const square = selectedPieceCopy.piece.availableMoves[i];
+                    let piecesCopy = JSON.parse(JSON.stringify(pieces));
+                    let movesCopy;
+                    let newWhiteKingSquare = whiteKingSquare;
+                    let newBlackKingSquare = blackKingSquare;
+                    let capturedPiecesCopy = capturedPieces.slice(0);
+                    piecesCopy[selectedPieceIndex].currentRow = parseInt(
+                        selectedPieceCopy.piece.availableMoves[i][1]
+                    );
+                    piecesCopy[selectedPieceIndex].currentCol = parseInt(
+                        selectedPieceCopy.piece.availableMoves[i][0]
+                    );
+
+                    selectedPieceCopy.currentCol =
+                        piecesCopy[selectedPieceIndex].currentCol;
+                    selectedPieceCopy.currentRow =
+                        piecesCopy[selectedPieceIndex].currentRow;
+
+                    // castle
+                    if (
+                        selectedPieceCopy.piece.type == "king" &&
+                        !selectedPieceCopy.piece.moved &&
+                        square[1] ==
+                            piecesCopy[
+                                selectedPieceIndex
+                            ].currentRow.toString() &&
+                        (square[0] ==
+                            (
+                                piecesCopy[selectedPieceIndex].currentCol + 2
+                            ).toString() ||
+                            square[0] ==
+                                (
+                                    piecesCopy[selectedPieceIndex].currentCol -
+                                    2
+                                ).toString())
+                    ) {
+                        if (
+                            checkCastleValid(
+                                check,
+                                newWhiteKingSquare,
+                                newBlackKingSquare,
+                                square,
+                                piecesCopy,
+                                selectedPieceCopy,
+                                moves,
+                                selectedPieceIndex,
+                                previousSquare
+                            )
+                        ) {
+                            legalMoves.push(square);
+                        }
+                    } else {
+                        // Not Castling
+
+                        let piece = checkSquareForPiece(
+                            piecesCopy,
+                            square,
+                            selectedPieceCopy.piece
+                        );
+
+                        if (piece) {
+                            capturePiece(piece, capturedPiecesCopy, piecesCopy);
+                        }
+
+                        // En Passant
+                        if (
+                            selectedPieceCopy.piece.type == "pawn" &&
+                            !piece &&
+                            square[0] != selectedPieceCopy.piece.currentCol
+                        ) {
+                            capturePiece(
+                                moves[moves.length - 1][0],
+                                capturedPiecesCopy,
+                                piecesCopy
+                            );
+                        }
+
+                        if (selectedPieceCopy.piece.type == "king") {
+                            selectedPieceCopy.piece.colour == "white"
+                                ? (newWhiteKingSquare = square)
+                                : (newBlackKingSquare = square);
+                        }
+
+                        selectedPieceCopy.piece = JSON.parse(
+                            JSON.stringify(piecesCopy[selectedPieceIndex])
+                        );
+                        movesCopy = moves.slice(0);
+                        movesCopy.push([
+                            selectedPieceCopy.piece,
+                            previousSquare,
+                        ]);
+
+                        // must finish move out of check
+                        if (
+                            !finishOutOfCheck(
+                                piecesCopy,
+                                selectedPieceCopy,
+                                newBlackKingSquare,
+                                newWhiteKingSquare,
+                                movesCopy
+                            )
+                        ) {
+                            continue;
+                        }
+
+                        legalMoves.push(square);
+                    }
+                }
+
+                selectedPieceCopy.piece.availableMoves = legalMoves;
+                let piecesCopy = JSON.parse(JSON.stringify(pieces));
+                piecesCopy[selectedPieceIndex] = selectedPieceCopy.piece;
+                selectedPieceCopy.piece.currentCol = col;
+                selectedPieceCopy.piece.currentRow = row;
 
                 setSelectedPiece({
-                    piece: pieceCopy,
+                    piece: selectedPieceCopy.piece,
                     square: square,
                 });
+
+                setPieces(piecesCopy);
             }
         }
     }

@@ -24,8 +24,8 @@ import {
 function App() {
     const [whiteToMove, setWhiteToMove] = useState(true);
     const [capturedPieces, setCapturedPieces] = useState([]);
-    const [whiteKingSquare, setWhiteKingSquare] = useState("04");
-    const [blackKingSquare, setBlackKingSquare] = useState("74");
+    const [whiteKingSquare, setWhiteKingSquare] = useState("51");
+    const [blackKingSquare, setBlackKingSquare] = useState("58");
     const [check, setCheck] = useState(false);
     const [checkmate, setCheckmate] = useState(false);
     const [promote, setPromote] = useState(false);
@@ -36,168 +36,168 @@ function App() {
             name: "wp1",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 0,
+            currentRow: 2,
+            currentCol: 1,
             moved: false,
             src: wPawn,
-            availableMoves: ["20", "30"],
+            availableMoves: ["13", "14"],
         },
         {
             name: "wp2",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 1,
+            currentRow: 2,
+            currentCol: 2,
             moved: false,
             src: wPawn,
-            availableMoves: ["21", "31"],
+            availableMoves: ["23", "24"],
         },
         {
             name: "wp3",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 2,
+            currentRow: 2,
+            currentCol: 3,
             moved: false,
             src: wPawn,
-            availableMoves: ["22", "32"],
+            availableMoves: ["33", "34"],
         },
         {
             name: "wp4",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 3,
+            currentRow: 2,
+            currentCol: 4,
             moved: false,
             src: wPawn,
-            availableMoves: ["23", "33"],
+            availableMoves: ["43", "44"],
         },
         {
             name: "wp5",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 4,
+            currentRow: 2,
+            currentCol: 5,
             moved: false,
             src: wPawn,
-            availableMoves: ["24", "34"],
+            availableMoves: ["53", "54"],
         },
         {
             name: "wp6",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 5,
+            currentRow: 2,
+            currentCol: 6,
             moved: false,
             src: wPawn,
-            availableMoves: ["25", "35"],
+            availableMoves: ["63", "64"],
         },
         {
             name: "wp7",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 6,
+            currentRow: 2,
+            currentCol: 7,
             moved: false,
             src: wPawn,
-            availableMoves: ["26", "36"],
+            availableMoves: ["73", "74"],
         },
         {
             name: "wp8",
             type: "pawn",
             colour: "white",
-            currentRow: 1,
-            currentCol: 7,
+            currentRow: 2,
+            currentCol: 8,
             moved: false,
             src: wPawn,
-            availableMoves: ["27", "37"],
+            availableMoves: ["83", "84"],
         },
         {
             name: "bp1",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 0,
+            currentRow: 7,
+            currentCol: 1,
             moved: false,
             src: bPawn,
-            availableMoves: ["50", "40"],
+            availableMoves: ["16", "15"],
         },
         {
             name: "bp2",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 1,
+            currentRow: 7,
+            currentCol: 2,
             moved: false,
             src: bPawn,
-            availableMoves: ["51", "41"],
+            availableMoves: ["26", "25"],
         },
         {
             name: "bp3",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 2,
+            currentRow: 7,
+            currentCol: 3,
             moved: false,
             src: bPawn,
-            availableMoves: ["52", "42"],
+            availableMoves: ["36", "35"],
         },
         {
             name: "bp4",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 3,
+            currentRow: 7,
+            currentCol: 4,
             moved: false,
             src: bPawn,
-            availableMoves: ["53", "43"],
+            availableMoves: ["46", "45"],
         },
         {
             name: "bp5",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 4,
+            currentRow: 7,
+            currentCol: 5,
             moved: false,
             src: bPawn,
-            availableMoves: ["54", "44"],
+            availableMoves: ["56", "55"],
         },
         {
             name: "bp6",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 5,
+            currentRow: 7,
+            currentCol: 6,
             moved: false,
             src: bPawn,
-            availableMoves: ["55", "45"],
+            availableMoves: ["66", "65"],
         },
         {
             name: "bp7",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 6,
+            currentRow: 7,
+            currentCol: 7,
             moved: false,
             src: bPawn,
-            availableMoves: ["56", "46"],
+            availableMoves: ["76", "75"],
         },
         {
             name: "bp8",
             type: "pawn",
             colour: "black",
-            currentRow: 6,
-            currentCol: 7,
+            currentRow: 7,
+            currentCol: 8,
             moved: false,
             src: bPawn,
-            availableMoves: ["57", "47"],
+            availableMoves: ["86", "85"],
         },
         {
             name: "wr1",
             type: "rook",
             colour: "white",
-            currentRow: 0,
-            currentCol: 0,
+            currentRow: 1,
+            currentCol: 1,
             moved: false,
             src: wRook,
             availableMoves: [],
@@ -206,8 +206,8 @@ function App() {
             name: "wr2",
             type: "rook",
             colour: "white",
-            currentRow: 0,
-            currentCol: 7,
+            currentRow: 1,
+            currentCol: 8,
             moved: false,
             src: wRook,
             availableMoves: [],
@@ -216,8 +216,8 @@ function App() {
             name: "br1",
             type: "rook",
             colour: "black",
-            currentRow: 7,
-            currentCol: 0,
+            currentRow: 8,
+            currentCol: 1,
             moved: false,
             src: bRook,
             availableMoves: [],
@@ -226,8 +226,8 @@ function App() {
             name: "br2",
             type: "rook",
             colour: "black",
-            currentRow: 7,
-            currentCol: 7,
+            currentRow: 8,
+            currentCol: 8,
             moved: false,
             src: bRook,
             availableMoves: [],
@@ -236,44 +236,44 @@ function App() {
             name: "wn1",
             type: "knight",
             colour: "white",
-            currentRow: 0,
-            currentCol: 1,
+            currentRow: 1,
+            currentCol: 2,
             src: wKnight,
-            availableMoves: ["20", "22"],
+            availableMoves: ["31", "33"],
         },
         {
             name: "wn2",
             type: "knight",
             colour: "white",
-            currentRow: 0,
-            currentCol: 6,
+            currentRow: 1,
+            currentCol: 7,
             src: wKnight,
-            availableMoves: ["25", "27"],
+            availableMoves: ["36", "38"],
         },
         {
             name: "bn1",
             type: "knight",
             colour: "black",
-            currentRow: 7,
-            currentCol: 1,
+            currentRow: 8,
+            currentCol: 2,
             src: bKnight,
-            availableMoves: ["50", "52"],
+            availableMoves: ["61", "63"],
         },
         {
             name: "bn2",
             type: "knight",
             colour: "black",
-            currentRow: 7,
-            currentCol: 6,
+            currentRow: 8,
+            currentCol: 7,
             src: bKnight,
-            availableMoves: ["55", "57"],
+            availableMoves: ["66", "68"],
         },
         {
             name: "wb1",
             type: "bishop",
             colour: "white",
-            currentRow: 0,
-            currentCol: 2,
+            currentRow: 1,
+            currentCol: 3,
             src: wBishop,
             availableMoves: [],
         },
@@ -281,8 +281,8 @@ function App() {
             name: "wb2",
             type: "bishop",
             colour: "white",
-            currentRow: 0,
-            currentCol: 5,
+            currentRow: 1,
+            currentCol: 6,
             src: wBishop,
             availableMoves: [],
         },
@@ -290,8 +290,8 @@ function App() {
             name: "bb1",
             type: "bishop",
             colour: "black",
-            currentRow: 7,
-            currentCol: 2,
+            currentRow: 8,
+            currentCol: 3,
             src: bBishop,
             availableMoves: [],
         },
@@ -299,8 +299,8 @@ function App() {
             name: "bb2",
             type: "bishop",
             colour: "black",
-            currentRow: 7,
-            currentCol: 5,
+            currentRow: 8,
+            currentCol: 6,
             src: bBishop,
             availableMoves: [],
         },
@@ -308,8 +308,8 @@ function App() {
             name: "wq1",
             type: "queen",
             colour: "white",
-            currentRow: 0,
-            currentCol: 3,
+            currentRow: 1,
+            currentCol: 4,
             src: wQueen,
             availableMoves: [],
         },
@@ -317,8 +317,8 @@ function App() {
             name: "bq1",
             type: "queen",
             colour: "black",
-            currentRow: 7,
-            currentCol: 3,
+            currentRow: 8,
+            currentCol: 4,
             src: bQueen,
             availableMoves: [],
         },
@@ -326,8 +326,8 @@ function App() {
             name: "wk1",
             type: "king",
             colour: "white",
-            currentRow: 0,
-            currentCol: 4,
+            currentRow: 1,
+            currentCol: 5,
             moved: false,
             src: wKing,
             availableMoves: [],
@@ -336,8 +336,8 @@ function App() {
             name: "bk1",
             type: "king",
             colour: "black",
-            currentRow: 7,
-            currentCol: 4,
+            currentRow: 8,
+            currentCol: 5,
             moved: false,
             src: bKing,
             availableMoves: [],
@@ -347,10 +347,6 @@ function App() {
         piece: null,
         square: null,
     });
-
-    function promotePiece(newType) {
-        console.log(newType);
-    }
 
     return (
         <div className="App game">
@@ -364,6 +360,16 @@ function App() {
                     </>
                 )}
             </h3>
+            <p>
+                Available Moves:{" "}
+                {selectedPiece.piece
+                    ? selectedPiece.piece.availableMoves.toString()
+                    : ""}
+            </p>
+            <p>
+                Selected Piece:{" "}
+                {selectedPiece.piece ? selectedPiece.piece.name.toString() : ""}
+            </p>
             <PromoteScreen
                 pieces={pieces}
                 setPieces={setPieces}
@@ -387,6 +393,29 @@ function App() {
                 setMoves={setMoves}
             />
 
+            <BoardRow
+                row={8}
+                pieces={pieces}
+                setPieces={setPieces}
+                selectedPiece={selectedPiece}
+                setSelectedPiece={setSelectedPiece}
+                whiteToMove={whiteToMove}
+                setWhiteToMove={setWhiteToMove}
+                capturedPieces={capturedPieces}
+                setCapturedPieces={setCapturedPieces}
+                whiteKingSquare={whiteKingSquare}
+                setWhiteKingSquare={setWhiteKingSquare}
+                blackKingSquare={blackKingSquare}
+                setBlackKingSquare={setBlackKingSquare}
+                check={check}
+                setCheck={setCheck}
+                checkmate={checkmate}
+                setCheckmate={setCheckmate}
+                promote={promote}
+                setPromote={setPromote}
+                moves={moves}
+                setMoves={setMoves}
+            />
             <BoardRow
                 row={7}
                 pieces={pieces}
@@ -548,29 +577,6 @@ function App() {
                 moves={moves}
                 setMoves={setMoves}
             />
-            <BoardRow
-                row={0}
-                pieces={pieces}
-                setPieces={setPieces}
-                selectedPiece={selectedPiece}
-                setSelectedPiece={setSelectedPiece}
-                whiteToMove={whiteToMove}
-                setWhiteToMove={setWhiteToMove}
-                capturedPieces={capturedPieces}
-                setCapturedPieces={setCapturedPieces}
-                whiteKingSquare={whiteKingSquare}
-                setWhiteKingSquare={setWhiteKingSquare}
-                blackKingSquare={blackKingSquare}
-                setBlackKingSquare={setBlackKingSquare}
-                check={check}
-                setCheck={setCheck}
-                checkmate={checkmate}
-                setCheckmate={setCheckmate}
-                promote={promote}
-                setPromote={setPromote}
-                moves={moves}
-                setMoves={setMoves}
-            />
         </div>
     );
 }
@@ -592,6 +598,7 @@ function PromoteScreen({
     whiteToMove,
     selectedPiece,
     setSelectedPiece,
+    moves,
 }) {
     function handleClick(pieceType) {
         let piecesCopy = JSON.parse(JSON.stringify(pieces));
@@ -648,7 +655,8 @@ function PromoteScreen({
                 piecesCopy,
                 selectedPieceIndex,
                 blackKingSquare,
-                whiteKingSquare
+                whiteKingSquare,
+                moves
             );
         }
 

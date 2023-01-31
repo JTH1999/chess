@@ -28,30 +28,6 @@ export default function BoardRow({
         <div>
             <Square
                 row={row}
-                col={0}
-                pieces={pieces}
-                setPieces={setPieces}
-                selectedPiece={selectedPiece}
-                setSelectedPiece={setSelectedPiece}
-                whiteToMove={whiteToMove}
-                setWhiteToMove={setWhiteToMove}
-                capturedPieces={capturedPieces}
-                setCapturedPieces={setCapturedPieces}
-                whiteKingSquare={whiteKingSquare}
-                setWhiteKingSquare={setWhiteKingSquare}
-                blackKingSquare={blackKingSquare}
-                setBlackKingSquare={setBlackKingSquare}
-                check={check}
-                setCheck={setCheck}
-                checkmate={checkmate}
-                setCheckmate={setCheckmate}
-                promote={promote}
-                setPromote={setPromote}
-                moves={moves}
-                setMoves={setMoves}
-            />
-            <Square
-                row={row}
                 col={1}
                 pieces={pieces}
                 setPieces={setPieces}
@@ -197,6 +173,30 @@ export default function BoardRow({
             <Square
                 row={row}
                 col={7}
+                pieces={pieces}
+                setPieces={setPieces}
+                selectedPiece={selectedPiece}
+                setSelectedPiece={setSelectedPiece}
+                whiteToMove={whiteToMove}
+                setWhiteToMove={setWhiteToMove}
+                capturedPieces={capturedPieces}
+                setCapturedPieces={setCapturedPieces}
+                whiteKingSquare={whiteKingSquare}
+                setWhiteKingSquare={setWhiteKingSquare}
+                blackKingSquare={blackKingSquare}
+                setBlackKingSquare={setBlackKingSquare}
+                check={check}
+                setCheck={setCheck}
+                checkmate={checkmate}
+                setCheckmate={setCheckmate}
+                promote={promote}
+                setPromote={setPromote}
+                moves={moves}
+                setMoves={setMoves}
+            />
+            <Square
+                row={row}
+                col={8}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}

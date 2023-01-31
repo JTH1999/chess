@@ -1,17 +1,9 @@
-export function capturePiece(
-    piece,
-    capturedPiecesCopy,
-    piecesCopy,
-    selectedPieceIndex
-) {
+export function capturePiece(piece, capturedPiecesCopy, piecesCopy) {
     for (let i = 0; i < piecesCopy.length; i++) {
         if (piecesCopy[i].name === piece.name) {
             capturedPiecesCopy.push(piece);
-            piecesCopy.splice(i, 1);
-            if (i < selectedPieceIndex) {
-                selectedPieceIndex -= 1;
-            }
-            return selectedPieceIndex;
+            piecesCopy[i].currentCol = -1;
+            piecesCopy[i].currentRow = -1;
         }
     }
 }
@@ -79,8 +71,8 @@ export function checkIfCheckmate(
             for (let j = 0; j < piecesCopy[i].availableMoves.length; j++) {
                 let piecesCopyCopy = JSON.parse(JSON.stringify(piecesCopy));
                 let piece = piecesCopyCopy[i];
-                piece.currentRow = piecesCopy[i].availableMoves[j][0];
-                piece.currentCol = piecesCopy[i].availableMoves[j][1];
+                piece.currentRow = piecesCopy[i].availableMoves[j][1];
+                piece.currentCol = piecesCopy[i].availableMoves[j][0];
                 let newWhiteKingSquare = whiteKingSquare;
                 let newBlackKingSquare = blackKingSquare;
 
@@ -103,13 +95,15 @@ export function checkIfCheckmate(
                     }
                 }
                 if (tbrIndex >= 0) {
-                    piecesCopyCopy.splice(tbrIndex, 1);
-                    if (tbrIndex < i) {
-                        piece = piecesCopyCopy[i - 1];
-                    }
-                    if (tbrIndex < selectedPieceIndex) {
-                        selectedPieceIndex -= 1;
-                    }
+                    // piecesCopyCopy.splice(tbrIndex, 1);
+                    // if (tbrIndex < i) {
+                    //     piece = piecesCopyCopy[i - 1];
+                    // }
+                    // if (tbrIndex < selectedPieceIndex) {
+                    //     selectedPieceIndex -= 1;
+                    // }
+                    piecesCopyCopy[tbrIndex].currentRow = -1;
+                    piecesCopyCopy[tbrIndex].currentCol = -1;
                 }
 
                 for (let z = 0; z < piecesCopyCopy.length; z++) {
@@ -127,13 +121,97 @@ export function checkIfCheckmate(
                     newWhiteKingSquare
                 );
                 if (!inCheck) {
-                    console.log(piece);
                     return false;
                 }
             }
         }
     }
     return true;
+}
+
+export function checkCastleValid(
+    check,
+    newWhiteKingSquare,
+    newBlackKingSquare,
+    square,
+    piecesCopy,
+    selectedPiece,
+    moves,
+    selectedPieceIndex,
+    previousSquare
+) {
+    if (check) {
+        return false;
+    }
+
+    // white king side - 71, queen side - 31
+    // black king side - 78, queen side - 38
+    if (square == "71") {
+        newWhiteKingSquare = "61";
+    } else if (square == "31") {
+        newWhiteKingSquare = "41";
+    } else if (square == "78") {
+        newBlackKingSquare = "68";
+    } else if (square == "38") {
+        newBlackKingSquare = "48";
+    }
+
+    if (
+        !finishOutOfCheck(
+            piecesCopy,
+            selectedPiece,
+            newBlackKingSquare,
+            newWhiteKingSquare,
+            moves
+        )
+    ) {
+        return false;
+    }
+
+    piecesCopy[selectedPieceIndex].currentCol = parseInt(square[0]);
+    piecesCopy[selectedPieceIndex].currentRow = parseInt(square[1]);
+    piecesCopy[selectedPieceIndex].moved = true;
+
+    if (square == "71") {
+        newWhiteKingSquare = square;
+    } else if (square == "31") {
+        newWhiteKingSquare = square;
+    } else if (square == "78") {
+        newBlackKingSquare = square;
+    } else if (square == "38") {
+        newBlackKingSquare = square;
+    }
+
+    let pieceCopy = JSON.parse(JSON.stringify(piecesCopy[selectedPieceIndex]));
+    let movesCopy = moves.slice(0);
+    movesCopy.push([pieceCopy, previousSquare]);
+
+    if (
+        !finishOutOfCheck(
+            piecesCopy,
+            selectedPiece,
+            newBlackKingSquare,
+            newWhiteKingSquare,
+            movesCopy
+        )
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+export function checkSquareForPiece(pieces, square, selectedPiece) {
+    for (let i = 0; i < pieces.length; i++) {
+        if (
+            pieces[i].currentRow.toString() == square[1] &&
+            pieces[i].currentCol.toString() == square[0] &&
+            pieces[i].colour != selectedPiece.colour
+        ) {
+            return pieces[i];
+        }
+    }
+    return null;
 }
 
 // checks if a square contains a piece. Returns true if does, false if not.
@@ -167,8 +245,8 @@ function rookBishopCheckIfPiece(pieces, piece, direction, possibleMoves, i) {
         ) {
             if (pieces[j].colour != piece.colour) {
                 const square =
-                    pieces[j].currentRow.toString() +
-                    pieces[j].currentCol.toString();
+                    pieces[j].currentCol.toString() +
+                    pieces[j].currentRow.toString();
                 possibleMoves.push(square);
                 return true;
             } else {
@@ -183,8 +261,8 @@ function rookBishopCheckIfPiece(pieces, piece, direction, possibleMoves, i) {
 function checkIfPiece(pieces, piece, square, possibleMoves) {
     for (let i = 0; i < pieces.length; i++) {
         if (
-            pieces[i].currentRow == parseInt(square[0]) &&
-            pieces[i].currentCol == parseInt(square[1])
+            pieces[i].currentRow == parseInt(square[1]) &&
+            pieces[i].currentCol == parseInt(square[0])
         ) {
             if (pieces[i].colour != piece.colour) {
                 possibleMoves.push(square);
@@ -201,8 +279,8 @@ function checkIfPieceCastle(pieces, castleSquares) {
     for (let i = 0; i < pieces.length; i++) {
         for (let j = 0; j < castleSquares.length; j++) {
             if (
-                pieces[i].currentRow == parseInt(castleSquares[j][0]) &&
-                pieces[i].currentCol == parseInt(castleSquares[j][1])
+                pieces[i].currentRow == parseInt(castleSquares[j][1]) &&
+                pieces[i].currentCol == parseInt(castleSquares[j][0])
             ) {
                 return true;
             }
@@ -214,27 +292,26 @@ function checkIfPieceCastle(pieces, castleSquares) {
 
 export function checkAvailableMoves(piece, pieces, moves) {
     let possibleMoves = [];
-    // Square name system is [row][column]
+    // Square name system is [column number][row number]
     if (piece.type == "pawn") {
         const rowMove = piece.colour == "white" ? 1 : -1;
         const oneAhead =
-            (piece.currentRow + 1 * rowMove).toString() +
-            piece.currentCol.toString();
+            piece.currentCol.toString() +
+            (piece.currentRow + 1 * rowMove).toString();
         possibleMoves.push(oneAhead);
         if (!piece.moved) {
             const twoAhead =
-                (piece.currentRow + 2 * rowMove).toString() +
-                piece.currentCol.toString();
+                piece.currentCol.toString() +
+                (piece.currentRow + 2 * rowMove).toString();
             possibleMoves.push(twoAhead);
         }
 
         const diagonalLeft =
-            (piece.currentRow + 1 * rowMove).toString() +
-            (piece.currentCol - 1).toString();
+            (piece.currentCol - 1).toString() +
+            (piece.currentRow + 1 * rowMove).toString();
         const diagonalRight =
-            (piece.currentRow + 1 * rowMove).toString() +
-            (piece.currentCol + 1).toString();
-
+            (piece.currentCol + 1).toString() +
+            (piece.currentRow + 1 * rowMove).toString();
         // Loop through all pieces to see if any are in the in any of the possible slots
         // plus see if any opposition pieces are in the diagonals
         for (let i = 0; i < pieces.length; i++) {
@@ -243,8 +320,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
             }
 
             const square =
-                pieces[i].currentRow.toString() +
-                pieces[i].currentCol.toString();
+                pieces[i].currentCol.toString() +
+                pieces[i].currentRow.toString();
             const index = possibleMoves.indexOf(square);
             if (index > -1) {
                 possibleMoves.splice(index, 1);
@@ -267,27 +344,27 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 (previousPiece.currentCol == piece.currentCol + 1 ||
                     previousPiece.currentCol == piece.currentCol - 1) &&
                 previousPiece.currentRow == piece.currentRow &&
-                (previousPiece.currentRow == previousSquare[0] + 2 ||
-                    previousPiece.currentRow == previousSquare[0] - 2)
+                (previousPiece.currentRow == previousSquare[1] + 2 ||
+                    previousPiece.currentRow == previousSquare[1] - 2)
             ) {
                 const enPassantCol = previousPiece.currentCol;
                 const enPassantRow =
-                    previousPiece.currentRow == previousSquare[0] + 2
+                    previousPiece.currentRow == previousSquare[1] + 2
                         ? previousPiece.currentRow - 1
                         : previousPiece.currentRow + 1;
                 const enPassantSquare =
-                    enPassantRow.toString() + enPassantCol.toString();
+                    enPassantCol.toString() + enPassantRow.toString();
                 possibleMoves.push(enPassantSquare);
             }
         }
     } else if (piece.type == "rook") {
         // row moves
-        const rowsLeft = piece.currentCol;
-        const rowsRight = 7 - piece.currentCol;
+        const rowsLeft = piece.currentCol - 1;
+        const rowsRight = 8 - piece.currentCol;
 
         // col moves
-        const colsUp = 7 - piece.currentRow;
-        const colsDown = piece.currentRow;
+        const colsUp = 8 - piece.currentRow;
+        const colsDown = piece.currentRow - 1;
 
         // left
         for (let i = 1; i <= rowsLeft; i++) {
@@ -302,8 +379,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    piece.currentRow.toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    piece.currentRow.toString();
                 possibleMoves.push(square);
             }
         }
@@ -321,8 +398,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    piece.currentRow.toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    piece.currentRow.toString();
                 possibleMoves.push(square);
             }
         }
@@ -340,8 +417,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    piece.currentCol.toString();
+                    piece.currentCol.toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
@@ -359,8 +436,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    piece.currentCol.toString();
+                    piece.currentCol.toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
@@ -368,46 +445,47 @@ export function checkAvailableMoves(piece, pieces, moves) {
         // all 8 knight moves, even those outside of the board
         let allKnightMoves = [];
         allKnightMoves.push(
-            (piece.currentRow + 2).toString() +
-                (piece.currentCol + 1).toString()
+            (piece.currentCol + 1).toString() +
+                (piece.currentRow + 2).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow + 1).toString() +
-                (piece.currentCol + 2).toString()
+            (piece.currentCol + 2).toString() +
+                (piece.currentRow + 1).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow - 1).toString() +
-                (piece.currentCol + 2).toString()
+            (piece.currentCol + 2).toString() +
+                (piece.currentRow - 1).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow - 2).toString() +
-                (piece.currentCol + 1).toString()
+            (piece.currentCol + 1).toString() +
+                (piece.currentRow - 2).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow + 2).toString() +
-                (piece.currentCol - 1).toString()
+            (piece.currentCol - 1).toString() +
+                (piece.currentRow + 2).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow + 1).toString() +
-                (piece.currentCol - 2).toString()
+            (piece.currentCol - 2).toString() +
+                (piece.currentRow + 1).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow - 1).toString() +
-                (piece.currentCol - 2).toString()
+            (piece.currentCol - 2).toString() +
+                (piece.currentRow - 1).toString()
         );
         allKnightMoves.push(
-            (piece.currentRow - 2).toString() +
-                (piece.currentCol - 1).toString()
+            (piece.currentCol - 1).toString() +
+                (piece.currentRow - 2).toString()
         );
 
         // knight moves within the board
         let correctKnightMoves = [];
         for (let i = 0; i < allKnightMoves.length; i++) {
             if (
-                parseInt(allKnightMoves[i][0]) >= 0 &&
-                parseInt(allKnightMoves[i][1]) >= 0 &&
-                parseInt(allKnightMoves[i][0]) <= 7 &&
-                parseInt(allKnightMoves[i][1]) <= 7
+                parseInt(allKnightMoves[i][0]) >= 1 &&
+                parseInt(allKnightMoves[i][1]) >= 1 &&
+                parseInt(allKnightMoves[i][0]) <= 8 &&
+                parseInt(allKnightMoves[i][1]) <= 8 &&
+                allKnightMoves[i].length < 3
             ) {
                 correctKnightMoves.push(allKnightMoves[i]);
             }
@@ -429,7 +507,7 @@ export function checkAvailableMoves(piece, pieces, moves) {
     } else if (piece.type == "bishop") {
         // up left
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow + i <= 7 && piece.currentCol - i >= 0)) {
+            if (!(piece.currentRow + i <= 8 && piece.currentCol - i >= 1)) {
                 break;
             }
             const check = rookBishopCheckIfPiece(
@@ -443,15 +521,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // up right
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow + i <= 7 && piece.currentCol + i <= 7)) {
+            if (!(piece.currentRow + i <= 8 && piece.currentCol + i <= 8)) {
                 break;
             }
 
@@ -467,15 +545,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // down left
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow - i >= 0 && piece.currentCol - i >= 0)) {
+            if (!(piece.currentRow - i >= 1 && piece.currentCol - i >= 1)) {
                 break;
             }
 
@@ -491,15 +569,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // down right
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow - i >= 0 && piece.currentCol + i <= 7)) {
+            if (!(piece.currentRow - i >= 1 && piece.currentCol + i <= 8)) {
                 break;
             }
             const check = rookBishopCheckIfPiece(
@@ -513,15 +591,18 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
     } else if (piece.type == "queen") {
+        if (piece.name == "wq1") {
+            console.log("nice");
+        }
         // up left
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow + i <= 7 && piece.currentCol - i >= 0)) {
+            if (!(piece.currentRow + i <= 8 && piece.currentCol - i >= 1)) {
                 break;
             }
             const check = rookBishopCheckIfPiece(
@@ -535,15 +616,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // up right
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow + i <= 7 && piece.currentCol + i <= 7)) {
+            if (!(piece.currentRow + i <= 8 && piece.currentCol + i <= 8)) {
                 break;
             }
 
@@ -559,15 +640,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // down left
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow - i >= 0 && piece.currentCol - i >= 0)) {
+            if (!(piece.currentRow - i >= 1 && piece.currentCol - i >= 1)) {
                 break;
             }
 
@@ -583,15 +664,15 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // down right
         for (let i = 1; i <= 7; i++) {
-            if (!(piece.currentRow - i >= 0 && piece.currentCol + i <= 7)) {
+            if (!(piece.currentRow - i >= 1 && piece.currentCol + i <= 8)) {
                 break;
             }
             const check = rookBishopCheckIfPiece(
@@ -605,19 +686,19 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
 
         // row moves
-        const rowsLeft = piece.currentCol;
-        const rowsRight = 7 - piece.currentCol;
+        const rowsLeft = piece.currentCol - 1;
+        const rowsRight = 8 - piece.currentCol;
 
         // col moves
-        const colsUp = 7 - piece.currentRow;
-        const colsDown = piece.currentRow;
+        const colsUp = 8 - piece.currentRow;
+        const colsDown = piece.currentRow - 1;
 
         // left
         for (let i = 1; i <= rowsLeft; i++) {
@@ -632,8 +713,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    piece.currentRow.toString() +
-                    (piece.currentCol - i).toString();
+                    (piece.currentCol - i).toString() +
+                    piece.currentRow.toString();
                 possibleMoves.push(square);
             }
         }
@@ -651,8 +732,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    piece.currentRow.toString() +
-                    (piece.currentCol + i).toString();
+                    (piece.currentCol + i).toString() +
+                    piece.currentRow.toString();
                 possibleMoves.push(square);
             }
         }
@@ -670,8 +751,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow + i).toString() +
-                    piece.currentCol.toString();
+                    piece.currentCol.toString() +
+                    (piece.currentRow + i).toString();
                 possibleMoves.push(square);
             }
         }
@@ -689,8 +770,8 @@ export function checkAvailableMoves(piece, pieces, moves) {
                 break;
             } else {
                 const square =
-                    (piece.currentRow - i).toString() +
-                    piece.currentCol.toString();
+                    piece.currentCol.toString() +
+                    (piece.currentRow - i).toString();
                 possibleMoves.push(square);
             }
         }
@@ -698,42 +779,42 @@ export function checkAvailableMoves(piece, pieces, moves) {
         // all 8 knight moves, even those outside of the board
         let allKingMoves = [];
         allKingMoves.push(
-            (piece.currentRow + 1).toString() + piece.currentCol.toString()
+            piece.currentCol.toString() + (piece.currentRow + 1).toString()
         );
         allKingMoves.push(
-            (piece.currentRow + 1).toString() +
-                (piece.currentCol + 1).toString()
+            (piece.currentCol + 1).toString() +
+                (piece.currentRow + 1).toString()
         );
         allKingMoves.push(
-            piece.currentRow.toString() + (piece.currentCol + 1).toString()
+            (piece.currentCol + 1).toString() + piece.currentRow.toString()
         );
         allKingMoves.push(
-            (piece.currentRow - 1).toString() +
-                (piece.currentCol + 1).toString()
+            (piece.currentCol + 1).toString() +
+                (piece.currentRow - 1).toString()
         );
         allKingMoves.push(
-            (piece.currentRow - 1).toString() + piece.currentCol.toString()
+            piece.currentCol.toString() + (piece.currentRow - 1).toString()
         );
         allKingMoves.push(
-            (piece.currentRow - 1).toString() +
-                (piece.currentCol - 1).toString()
+            (piece.currentCol - 1).toString() +
+                (piece.currentRow - 1).toString()
         );
         allKingMoves.push(
-            piece.currentRow.toString() + (piece.currentCol - 1).toString()
+            (piece.currentCol - 1).toString() + piece.currentRow.toString()
         );
         allKingMoves.push(
-            (piece.currentRow + 1).toString() +
-                (piece.currentCol - 1).toString()
+            (piece.currentCol - 1).toString() +
+                (piece.currentRow + 1).toString()
         );
 
         // king moves within the board
         let correctKingMoves = [];
         for (let i = 0; i < allKingMoves.length; i++) {
             if (
-                parseInt(allKingMoves[i][0]) >= 0 &&
-                parseInt(allKingMoves[i][1]) >= 0 &&
-                parseInt(allKingMoves[i][0]) <= 7 &&
-                parseInt(allKingMoves[i][1]) <= 7
+                parseInt(allKingMoves[i][0]) >= 1 &&
+                parseInt(allKingMoves[i][1]) >= 1 &&
+                parseInt(allKingMoves[i][0]) <= 8 &&
+                parseInt(allKingMoves[i][1]) <= 8
             ) {
                 correctKingMoves.push(allKingMoves[i]);
             }
@@ -771,10 +852,10 @@ export function checkAvailableMoves(piece, pieces, moves) {
             // king side
             let kingSideSquares = [];
             kingSideSquares.push(
-                piece.currentRow.toString() + (piece.currentCol + 1).toString()
+                (piece.currentCol + 1).toString() + piece.currentRow.toString()
             );
             kingSideSquares.push(
-                piece.currentRow.toString() + (piece.currentCol + 2).toString()
+                (piece.currentCol + 2).toString() + piece.currentRow.toString()
             );
 
             if (
@@ -789,13 +870,13 @@ export function checkAvailableMoves(piece, pieces, moves) {
             // Queen side
             let queenSideSquares = [];
             queenSideSquares.push(
-                piece.currentRow.toString() + (piece.currentCol - 1).toString()
+                (piece.currentCol - 1).toString() + piece.currentRow.toString()
             );
             queenSideSquares.push(
-                piece.currentRow.toString() + (piece.currentCol - 2).toString()
+                (piece.currentCol - 2).toString() + piece.currentRow.toString()
             );
             queenSideSquares.push(
-                piece.currentRow.toString() + (piece.currentCol - 3).toString()
+                (piece.currentCol - 3).toString() + piece.currentRow.toString()
             );
 
             if (
