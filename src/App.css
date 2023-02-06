@@ -1,5 +1,11 @@
+body {
+  background-color: #383838;
+  color: white;
+}
+
 .App {
   padding: 60px;
+  
 }
 
 .square {
@@ -9,10 +15,11 @@
   background-color: rgb(234, 248, 232);
   border: 1px solid #999;
   float: left;
-  height: 60px;
-  width: 60px;
+  height: 80px;
+  width: 80px;
   margin-right: -1px;
   margin-top: -1px;
+  user-select: none;
 }
 
 .square.selected {
@@ -27,16 +34,22 @@
   background-color: #97d631;
 }
 
-.game {
+.board {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  /* border: 3px solid rgb(255, 255, 255); */
+  border-right-width: 2px;
+  border-left-width: 2px;
+  /* background-color: white; */
+  box-shadow: -10px -10px 40px 0px rgba(73, 73, 73, 0.45), 10px 10px 30px 0px rgba(0, 0, 0, 0.4);
 }
 
 .piece {
   z-index: 4;
-  height: 45px;
+  height: 60px;
   /* Don't know why the drop shadow isn't working */
   -webkit-filter: drop-shadow(5px, 5px, 30px, rgba(0, 0, 0, 0.2));
   filter: drop-shadow(5px, 5px, 30px, rgba(0, 0, 0, 0.2));
@@ -53,40 +66,159 @@ body {
   display: grid;
   grid-gap: 20px;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   z-index: 5;
   background-color: white;
   padding: 20px;
   border-radius: 30px;
   border: 4px solid black;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
-  margin-left: 150px;
+  /* margin-left: 150px;
   margin-top: 120px;
-  margin-bottom: -300px;
-  width: 160px;
+  margin-bottom: -300px; */
+  width: 200px;
+  position: absolute;
+  /* left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); */
 }
 
-.one {
-  grid-column: 1;
-  grid-row: 1;
-  height: 60px;
+.checkmate-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  background-color: white;
+  padding: 20px;
+  border-radius: 30px;
+  border: 4px solid black;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+  width: 350px;
+  position: absolute;
+  color: black;
+}
+
+.promote-screen-item {
+  display: flex;
+  justify-content: center;
+
+}
+
+.promote-piece {
+
+  height: 80px;
+  cursor: pointer;
+  
+
+}
+
+.available-marker {
+  width: 30px;
+  z-index: 20;
+  position: absolute;
+  
+}
+
+.available-marker-piece {
+  width: 80px;
+  z-index: 3;
+  position: absolute;
+  
+}
+
+.checkmate-screen-pieces {
+  width: 80%;
+  margin-top: 20px;
+}
+
+.button {
+  border-radius: 20px;
+  background-color: rgb(101, 180, 90);
+  color: white;
+  width: 80%;
+  padding: 20px;
+  margin-top: 20px;
+  border: 0 solid white;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
+  font-size: 16px;
   cursor: pointer;
 }
 
-.two {
-  grid-column: 2;
-  grid-row: 1;
-  height: 60px;
+.checkmate-winner-text {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.checkmate-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px;
+  margin-top: 0;
+}
+
+.toMove-text {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 0px;
+}
+
+.analysis {
+  padding-top: 20px;
+  display: flex;
+  width: 100%;
+  font-size: 30px;
+  color: white;
+  justify-content: space-between;
+  align-items: center;
+  height: 1.5rem;
+}
+
+.chevron {
   cursor: pointer;
 }
-.three {
-  grid-column: 1;
-  grid-row: 2;
-  height: 60px;
-  cursor: pointer;
+
+.disabled {
+  cursor: auto;
+  color: rgb(94, 94, 94);
 }
-.four {
-  grid-column: 2;
-  grid-row: 2;
-  height: 60px;
-  cursor: pointer;
+
+.analysis-piece {
+  height: 25px;
+}
+
+.unselectable {
+  user-select: none;
+}
+
+.coming-soon-image {
+  width: 200px;
+  padding-top: 300px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.captured-pieces {
+  height: 25px;
+  margin-right: -10px;
+  position: relative;
+}
+
+.captured-pieces-section {
+  display: flex;
+  height: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  align-items: center;
+  font-size: 18px;
+}
+
+.captured-piece-type {
+  display: flex;
+  align-items: center;
+  padding-right: 14px;
 }

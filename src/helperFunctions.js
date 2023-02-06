@@ -1,11 +1,7 @@
 export function capturePiece(piece, capturedPiecesCopy, piecesCopy) {
-    for (let i = 0; i < piecesCopy.length; i++) {
-        if (piecesCopy[i].name === piece.name) {
-            capturedPiecesCopy.push(piece);
-            piecesCopy[i].currentCol = -1;
-            piecesCopy[i].currentRow = -1;
-        }
-    }
+    capturedPiecesCopy.push(piece);
+    piecesCopy[piece.index].currentCol = -1;
+    piecesCopy[piece.index].currentRow = -1;
 }
 
 // Calculate every piece's available moves - return true if no check, false if check
@@ -23,10 +19,10 @@ export function finishOutOfCheck(
             moves
         );
         if (
-            piecesCopy[i].colour != selectedPiece.piece.colour &&
-            ((selectedPiece.piece.colour == "black" &&
+            piecesCopy[i].colour != selectedPiece.colour &&
+            ((selectedPiece.colour == "black" &&
                 piecesCopy[i].availableMoves.includes(newBlackKingSquare)) ||
-                (selectedPiece.piece.colour == "white" &&
+                (selectedPiece.colour == "white" &&
                     piecesCopy[i].availableMoves.includes(newWhiteKingSquare)))
         ) {
             return false;
@@ -95,13 +91,6 @@ export function checkIfCheckmate(
                     }
                 }
                 if (tbrIndex >= 0) {
-                    // piecesCopyCopy.splice(tbrIndex, 1);
-                    // if (tbrIndex < i) {
-                    //     piece = piecesCopyCopy[i - 1];
-                    // }
-                    // if (tbrIndex < selectedPieceIndex) {
-                    //     selectedPieceIndex -= 1;
-                    // }
                     piecesCopyCopy[tbrIndex].currentRow = -1;
                     piecesCopyCopy[tbrIndex].currentCol = -1;
                 }
@@ -182,9 +171,11 @@ export function checkCastleValid(
         newBlackKingSquare = square;
     }
 
-    let pieceCopy = JSON.parse(JSON.stringify(piecesCopy[selectedPieceIndex]));
     let movesCopy = moves.slice(0);
-    movesCopy.push([pieceCopy, previousSquare]);
+    movesCopy.push({
+        movedPieceIndex: selectedPiece.index,
+        pieces: piecesCopy,
+    });
 
     if (
         !finishOutOfCheck(
@@ -336,22 +327,30 @@ export function checkAvailableMoves(piece, pieces, moves) {
         }
 
         // En passant
-        if (moves.length > 0) {
-            const previousPiece = moves[moves.length - 1][0];
-            const previousSquare = moves[moves.length - 1][1];
+        if (moves.length > 3) {
+            const previousPieceIndex = moves[moves.length - 1].movedPieceIndex;
+
+            const previouslyMovedPiece = pieces[previousPieceIndex];
+            const previousPieces = moves[moves.length - 2].pieces;
+            const previousPiecePreviousSquare =
+                previousPieces[previousPieceIndex].currentCol.toString() +
+                previousPieces[previousPieceIndex].currentRow.toString();
             if (
-                previousPiece.type == "pawn" &&
-                (previousPiece.currentCol == piece.currentCol + 1 ||
-                    previousPiece.currentCol == piece.currentCol - 1) &&
-                previousPiece.currentRow == piece.currentRow &&
-                (previousPiece.currentRow == previousSquare[1] + 2 ||
-                    previousPiece.currentRow == previousSquare[1] - 2)
+                previouslyMovedPiece.type == "pawn" &&
+                (previouslyMovedPiece.currentCol == piece.currentCol + 1 ||
+                    previouslyMovedPiece.currentCol == piece.currentCol - 1) &&
+                previouslyMovedPiece.currentRow == piece.currentRow &&
+                (previouslyMovedPiece.currentRow ==
+                    previousPiecePreviousSquare[1] + 2 ||
+                    previouslyMovedPiece.currentRow ==
+                        previousPiecePreviousSquare[1] - 2)
             ) {
-                const enPassantCol = previousPiece.currentCol;
+                const enPassantCol = previouslyMovedPiece.currentCol;
                 const enPassantRow =
-                    previousPiece.currentRow == previousSquare[1] + 2
-                        ? previousPiece.currentRow - 1
-                        : previousPiece.currentRow + 1;
+                    previouslyMovedPiece.currentRow ==
+                    previousPiecePreviousSquare[1] + 2
+                        ? previouslyMovedPiece.currentRow - 1
+                        : previouslyMovedPiece.currentRow + 1;
                 const enPassantSquare =
                     enPassantCol.toString() + enPassantRow.toString();
                 possibleMoves.push(enPassantSquare);
@@ -598,7 +597,6 @@ export function checkAvailableMoves(piece, pieces, moves) {
         }
     } else if (piece.type == "queen") {
         if (piece.name == "wq1") {
-            console.log("nice");
         }
         // up left
         for (let i = 1; i <= 7; i++) {
@@ -891,4 +889,112 @@ export function checkAvailableMoves(piece, pieces, moves) {
     }
 
     return possibleMoves;
+}
+
+export function calculateSelectedPieceLegalMoves(
+    selectedPieceCopy,
+    pieces,
+    whiteKingSquare,
+    blackKingSquare,
+    capturedPieces,
+    moves,
+    check,
+    previousSquare,
+    selectedPieceIndex
+) {
+    let legalMoves = [];
+
+    for (let i = 0; i < selectedPieceCopy.availableMoves.length; i++) {
+        const square = selectedPieceCopy.availableMoves[i];
+        let piecesCopy = JSON.parse(JSON.stringify(pieces));
+        let movesCopy;
+        let newWhiteKingSquare = whiteKingSquare;
+        let newBlackKingSquare = blackKingSquare;
+        let capturedPiecesCopy = capturedPieces.slice(0);
+        piecesCopy[selectedPieceIndex].currentRow = parseInt(
+            selectedPieceCopy.availableMoves[i][1]
+        );
+        piecesCopy[selectedPieceIndex].currentCol = parseInt(
+            selectedPieceCopy.availableMoves[i][0]
+        );
+
+        // castle
+        if (
+            selectedPieceCopy.type == "king" &&
+            !selectedPieceCopy.moved &&
+            square[1] == piecesCopy[selectedPieceIndex].currentRow.toString() &&
+            (square[0] == (selectedPieceCopy.currentCol + 2).toString() ||
+                square[0] == (selectedPieceCopy.currentCol - 2).toString())
+        ) {
+            if (
+                checkCastleValid(
+                    check,
+                    newWhiteKingSquare,
+                    newBlackKingSquare,
+                    square,
+                    piecesCopy,
+                    selectedPieceCopy,
+                    moves,
+                    selectedPieceIndex,
+                    previousSquare
+                )
+            ) {
+                legalMoves.push(square);
+            }
+        } else {
+            // Not Castling
+
+            let piece = checkSquareForPiece(
+                piecesCopy,
+                square,
+                selectedPieceCopy
+            );
+
+            if (piece) {
+                capturePiece(piece, capturedPiecesCopy, piecesCopy);
+            }
+
+            // En Passant
+            if (
+                selectedPieceCopy.type == "pawn" &&
+                !piece &&
+                square[0] != selectedPieceCopy.currentCol
+            ) {
+                capturePiece(
+                    piecesCopy[moves[moves.length - 1].movedPieceIndex],
+                    capturedPiecesCopy,
+                    piecesCopy
+                );
+            }
+
+            if (selectedPieceCopy.type == "king") {
+                selectedPieceCopy.colour == "white"
+                    ? (newWhiteKingSquare = square)
+                    : (newBlackKingSquare = square);
+            }
+
+            movesCopy = moves.slice(0);
+            movesCopy.push({
+                movedPieceIndex: selectedPieceCopy.index,
+                pieces: piecesCopy,
+            });
+
+            // must finish move out of check
+            if (
+                !finishOutOfCheck(
+                    piecesCopy,
+                    selectedPieceCopy,
+                    newBlackKingSquare,
+                    newWhiteKingSquare,
+                    movesCopy
+                )
+            ) {
+                continue;
+            }
+
+            legalMoves.push(square);
+        }
+    }
+
+    return legalMoves;
 }

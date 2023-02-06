@@ -1,8 +1,8 @@
-import Square from "./Square.js";
+import BoardRow from "./BoardRow.js";
+import PromoteScreen from "./PromoteScreen.js";
+import CheckmateScreen from "./CheckmateScreen.js";
 
-export default function BoardRow({
-    row,
-    col,
+export default function Board({
     pieces,
     setPieces,
     selectedPiece,
@@ -23,36 +23,31 @@ export default function BoardRow({
     setPromote,
     moves,
     setMoves,
+    analysisMode,
+    setAnalysisMode,
+    setAnalysisMoveNumber,
 }) {
     return (
-        <div>
-            <Square
-                row={row}
-                col={1}
-                pieces={pieces}
-                setPieces={setPieces}
-                selectedPiece={selectedPiece}
-                setSelectedPiece={setSelectedPiece}
+        <div className="board">
+            <CheckmateScreen
                 whiteToMove={whiteToMove}
-                setWhiteToMove={setWhiteToMove}
-                capturedPieces={capturedPieces}
-                setCapturedPieces={setCapturedPieces}
-                whiteKingSquare={whiteKingSquare}
-                setWhiteKingSquare={setWhiteKingSquare}
-                blackKingSquare={blackKingSquare}
-                setBlackKingSquare={setBlackKingSquare}
-                check={check}
-                setCheck={setCheck}
                 checkmate={checkmate}
+                setWhiteToMove={setWhiteToMove}
+                setCapturedPieces={setCapturedPieces}
+                setWhiteKingSquare={setWhiteKingSquare}
+                setBlackKingSquare={setBlackKingSquare}
+                setCheck={setCheck}
                 setCheckmate={setCheckmate}
-                promote={promote}
                 setPromote={setPromote}
-                moves={moves}
                 setMoves={setMoves}
+                setPieces={setPieces}
+                setSelectedPiece={setSelectedPiece}
+                analysisMode={analysisMode}
+                setAnalysisMode={setAnalysisMode}
+                setAnalysisMoveNumber={setAnalysisMoveNumber}
+                moves={moves}
             />
-            <Square
-                row={row}
-                col={2}
+            <PromoteScreen
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -73,10 +68,11 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={3}
+
+            <BoardRow
+                row={8}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -97,10 +93,10 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={4}
+            <BoardRow
+                row={7}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -121,10 +117,10 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={5}
+            <BoardRow
+                row={6}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -145,10 +141,10 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={6}
+            <BoardRow
+                row={5}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -169,10 +165,10 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={7}
+            <BoardRow
+                row={4}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -193,10 +189,10 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
             />
-            <Square
-                row={row}
-                col={8}
+            <BoardRow
+                row={3}
                 pieces={pieces}
                 setPieces={setPieces}
                 selectedPiece={selectedPiece}
@@ -217,6 +213,55 @@ export default function BoardRow({
                 setPromote={setPromote}
                 moves={moves}
                 setMoves={setMoves}
+                analysisMode={analysisMode}
+            />
+            <BoardRow
+                row={2}
+                pieces={pieces}
+                setPieces={setPieces}
+                selectedPiece={selectedPiece}
+                setSelectedPiece={setSelectedPiece}
+                whiteToMove={whiteToMove}
+                setWhiteToMove={setWhiteToMove}
+                capturedPieces={capturedPieces}
+                setCapturedPieces={setCapturedPieces}
+                whiteKingSquare={whiteKingSquare}
+                setWhiteKingSquare={setWhiteKingSquare}
+                blackKingSquare={blackKingSquare}
+                setBlackKingSquare={setBlackKingSquare}
+                check={check}
+                setCheck={setCheck}
+                checkmate={checkmate}
+                setCheckmate={setCheckmate}
+                promote={promote}
+                setPromote={setPromote}
+                moves={moves}
+                setMoves={setMoves}
+                analysisMode={analysisMode}
+            />
+            <BoardRow
+                row={1}
+                pieces={pieces}
+                setPieces={setPieces}
+                selectedPiece={selectedPiece}
+                setSelectedPiece={setSelectedPiece}
+                whiteToMove={whiteToMove}
+                setWhiteToMove={setWhiteToMove}
+                capturedPieces={capturedPieces}
+                setCapturedPieces={setCapturedPieces}
+                whiteKingSquare={whiteKingSquare}
+                setWhiteKingSquare={setWhiteKingSquare}
+                blackKingSquare={blackKingSquare}
+                setBlackKingSquare={setBlackKingSquare}
+                check={check}
+                setCheck={setCheck}
+                checkmate={checkmate}
+                setCheckmate={setCheckmate}
+                promote={promote}
+                setPromote={setPromote}
+                moves={moves}
+                setMoves={setMoves}
+                analysisMode={analysisMode}
             />
         </div>
     );
